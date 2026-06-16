@@ -1,17 +1,32 @@
 #include "MyCharacter.h"
+#include "GameFramework/SpringArmComponent.h"
+#include "Camera/CameraComponent.h"
 
 AMyCharacter::AMyCharacter()
 {
  	PrimaryActorTick.bCanEverTick = true;
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> SM(TEXT("/Game/ParagonGreystone/Characters/Heroes/Greystone/Meshes/Greystone.Greystone"));
 
-	//SkeletaMesh를 성공적으로 찾았다면
 	if (SM.Succeeded())
 	{
-		//USkeletalMeshComponent에 있는 SkeletalMesh에 해당 오브젝트 넣어주기.
 		GetMesh()->SetSkeletalMesh(SM.Object);
-
+		GetMesh()->SetRelativeLocationAndRotation(FVector(0.0, 0.0, -90.0), FRotator(0.0, -90.0, 0.0));
+	
 	}
+
+	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
+	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
+
+	SpringArm->SetupAttachment(RootComponent);
+	Camera->SetupAttachment(SpringArm);
+
+	//SpringArm의 Target Arm Length를 400.f으로 설정 
+	SpringArm->TargetArmLength = 400.f;
+
+	//SpringArm의 위치와 회전을 각각 z에 100.0, Pitch에 -25.0
+	SpringArm->SetRelativeLocationAndRotation(FVector(0.0, 0.0, 100.0), FRotator(-25.0, 0.0, 0.0));
+
+
 
 
 }
