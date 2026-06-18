@@ -1,6 +1,7 @@
 #include "MyCharacter.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
+#include "MyAnimInstance.h"
 
 AMyCharacter::AMyCharacter()
 {
@@ -37,6 +38,8 @@ AMyCharacter::AMyCharacter()
 void AMyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	AnimInstance = Cast<UMyAnimInstance>(GetMesh()->GetAnimInstance());
 	
 }
 
@@ -54,6 +57,8 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	PlayerInputComponent->BindAxis(TEXT("MoveForwardBackward"), this, &AMyCharacter::KeyUpDown);
 	PlayerInputComponent->BindAxis(TEXT("MoveLeftRight"), this, &AMyCharacter::KeyLeftRight);
 
+	PlayerInputComponent->BindAction(TEXT("Attack"), EInputEvent::IE_Pressed, this, &AMyCharacter::KeyAttack);
+
 }
 
 void AMyCharacter::KeyUpDown(float value)
@@ -64,5 +69,15 @@ void AMyCharacter::KeyUpDown(float value)
 void AMyCharacter::KeyLeftRight(float value)
 {
 	AddMovementInput(GetActorRightVector(), value, false);
+}
+
+void AMyCharacter::KeyAttack()
+{
+
+
+	if (IsValid(AnimInstance))
+	{
+		AnimInstance->PlayAttackMontage();
+	}
 }
 
