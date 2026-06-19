@@ -33,7 +33,13 @@ public:
 public:
 	void KeyUpDown(float value);
 	void KeyLeftRight(float value);
+public:
+	void LookLeftRight(float value);
+	void LookUpDown(float value);
 
 public:
 	void KeyAttack();
+
+public:
+	void PlayerAttack(); // capsule collider를 발생 시켜서 충돌을
 };

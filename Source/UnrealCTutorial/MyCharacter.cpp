@@ -23,6 +23,7 @@ AMyCharacter::AMyCharacter()
 
 	SpringArm->TargetArmLength = 400.f;
 	SpringArm->SetRelativeLocationAndRotation(FVector(0.0, 0.0, 100.0), FRotator(-25.0, 0.0, 0.0));
+	SpringArm->bUsePawnControlRotation = true;
 
 
 
@@ -58,7 +59,11 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	PlayerInputComponent->BindAxis(TEXT("MoveLeftRight"), this, &AMyCharacter::KeyLeftRight);
 
 	PlayerInputComponent->BindAction(TEXT("Attack"), EInputEvent::IE_Pressed, this, &AMyCharacter::KeyAttack);
+	PlayerInputComponent->BindAction(TEXT("Jump"), EInputEvent::IE_Pressed, this, &ACharacter::Jump);
+	PlayerInputComponent->BindAction(TEXT("Jump"), EInputEvent::IE_Released, this, &ACharacter::StopJumping);
 
+	PlayerInputComponent->BindAxis(TEXT("LookLeftRight"), this, &AMyCharacter::LookLeftRight);
+	PlayerInputComponent->BindAxis(TEXT("LookUpDown"), this, &AMyCharacter::LookUpDown);
 }
 
 void AMyCharacter::KeyUpDown(float value)
@@ -71,6 +76,16 @@ void AMyCharacter::KeyLeftRight(float value)
 	AddMovementInput(GetActorRightVector(), value, false);
 }
 
+void AMyCharacter::LookLeftRight(float value)
+{
+	AddControllerYawInput(value);
+}
+
+void AMyCharacter::LookUpDown(float value)
+{
+	AddControllerPitchInput(value);
+}
+
 void AMyCharacter::KeyAttack()
 {
 
@@ -79,5 +94,10 @@ void AMyCharacter::KeyAttack()
 	{
 		AnimInstance->PlayAttackMontage();
 	}
+}
+
+void AMyCharacter::PlayerAttack()
+{
+	UE_LOG(LogTemp, Log, TEXT("Collision"));
 }
 
