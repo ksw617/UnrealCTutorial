@@ -3,6 +3,7 @@
 
 #include "Enemy.h"
 #include "EnemyAIController.h"
+#include "EnemyAnimInstance.h"
 
 AEnemy::AEnemy()
 {
@@ -29,6 +30,8 @@ AEnemy::AEnemy()
 void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
+	EnemyAnimInstance = Cast<UEnemyAnimInstance>(GetMesh()->GetAnimInstance());
+	EnemyAnimInstance->OnMontageEnded.AddDynamic(this, &AEnemy::OnAttackMontageEnded);
 	
 }
 
@@ -48,5 +51,23 @@ float AEnemy::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AControl
 {
 	UE_LOG(LogTemp, Log, TEXT("Damaged : %f"), Damage);
 	return 0.0f;
+}
+
+void AEnemy::EnemyAttack()
+{
+	if (IsValid(EnemyAnimInstance))
+	{
+		if (!IsAttacking)
+		{
+			EnemyAnimInstance->PlayAttackMontage();
+			IsAttacking = true;
+
+		}
+	}
+}
+
+void AEnemy::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterupted)
+{
+	IsAttacking = false;
 }
 
