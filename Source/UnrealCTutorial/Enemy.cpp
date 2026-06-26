@@ -4,6 +4,28 @@
 #include "Enemy.h"
 #include "EnemyAIController.h"
 #include "EnemyAnimInstance.h"
+#include "Components/WidgetComponent.h"
+#include "HpUserWidget.h"
+#include "Components/ProgressBar.h"
+
+void AEnemy::SetHp(float NewHp)
+{
+	Hp = NewHp;
+	if (Hp <= 0)
+	{
+		Hp = 0;
+	}
+}
+
+float AEnemy::GetHpRatio() const
+{
+	if (MaxHp <= 0.f || Hp <= 0.f)
+	{
+		return 0.f;
+	}
+
+	return Hp / MaxHp;
+}
 
 AEnemy::AEnemy()
 {
@@ -25,6 +47,21 @@ AEnemy::AEnemy()
 	}
 
 	AIControllerClass = AEnemyAIController::StaticClass();
+
+	HpBar = CreateDefaultSubobject<UWidgetComponent>(TEXT("HpBar"));
+	HpBar->SetupAttachment(GetRootComponent());
+	HpBar->SetRelativeLocation(FVector(0.f, 0.f, 130.f));
+	HpBar->SetWidgetSpace(EWidgetSpace::Screen);
+	HpBar->SetDrawSize(FVector2D(200.f, 20.f));
+
+	static ConstructorHelpers::FClassFinder<UHpUserWidget> UW(TEXT("/Script/UMGEditor.WidgetBlueprint'/Game/UI/WBP_HpBar.WBP_HpBar_C'"));
+	if (UW.Succeeded())
+	{
+		HpBar->SetWidgetClass(UW.Class);
+	}
+
+	MaxHp = 100.f;
+
 }
 
 void AEnemy::BeginPlay()
@@ -33,6 +70,15 @@ void AEnemy::BeginPlay()
 	EnemyAnimInstance = Cast<UEnemyAnimInstance>(GetMesh()->GetAnimInstance());
 	EnemyAnimInstance->OnMontageEnded.AddDynamic(this, &AEnemy::OnAttackMontageEnded);
 	
+
+	Hp = MaxHp;
+
+	auto HpWidget = Cast<UHpUserWidget>(HpBar->GetUserWidgetObject());
+	if (HpWidget)
+	{
+		HpWidget->HP_ProgressBar->SetPercent(GetHpRatio());
+	}
+
 }
 
 void AEnemy::Tick(float DeltaTime)
@@ -49,8 +95,19 @@ void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 float AEnemy::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	UE_LOG(LogTemp, Log, TEXT("Damaged : %f"), Damage);
-	return 0.0f;
+	
+	float NewHp = Hp - Damage;
+
+	SetHp(NewHp);
+
+	auto HpWidget = Cast<UHpUserWidget>(HpBar->GetUserWidgetObject());
+	if (HpWidget)
+	{
+		HpWidget->HP_ProgressBar->SetPercent(GetHpRatio());
+	}	   
+	
+
+	return Damage;
 }
 
 void AEnemy::EnemyAttack()

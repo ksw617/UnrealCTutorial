@@ -12,11 +12,21 @@ class UNREALCTUTORIAL_API AEnemy : public ACharacter
 	GENERATED_BODY()
 private:
 	UPROPERTY(VisibleAnywhere)
+	float MaxHp;
+	UPROPERTY(VisibleAnywhere)
+	float Hp;
+private:
+	UPROPERTY(VisibleAnywhere)
 	class UEnemyAnimInstance* EnemyAnimInstance;
+	UPROPERTY(VisibleAnywhere)
+	class UWidgetComponent* HpBar;
 private:
 	bool IsAttacking = false;
 public:
 	bool IsAttack() const { return IsAttacking; }
+	float GetHp() const { return Hp; }
+	void SetHp(float NewHp);
+	float GetHpRatio() const;
 
 
 public:

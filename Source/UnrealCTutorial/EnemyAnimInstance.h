@@ -14,11 +14,19 @@ class UNREALCTUTORIAL_API UEnemyAnimInstance : public UAnimInstance
 {
 	GENERATED_BODY()
 public:
+	UPROPERTY(Category = "Character Movement", EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	bool ShouldMove;
+public:
 	UPROPERTY(VisibleAnywhere)
-	UAnimMontage* AttackMontage;
+	UAnimMontage* AttackMontage;		
+	UPROPERTY(VisibleAnywhere)
+	class UCharacterMovementComponent* CharacterMovement;
 public:
 	UEnemyAnimInstance();
 public:
 	void PlayAttackMontage();
+public:
+	virtual void NativeBeginPlay() override;
+	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 	
 };
