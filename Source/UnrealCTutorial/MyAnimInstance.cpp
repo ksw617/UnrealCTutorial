@@ -65,7 +65,7 @@ void UMyAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 		YawOffset = DeltaRotation.Yaw;
 
-		UE_LOG(LogTemp, Log, TEXT("Yaw Offset : %f"), YawOffset);
+		//UE_LOG(LogTemp, Log, TEXT("Yaw Offset : %f"), YawOffset);
 	}
 }
 
@@ -80,4 +80,9 @@ void UMyAnimInstance::PlayAttackMontage()
 			Character->PlayerAttack();
 		}
 	}
+}
+
+void UMyAnimInstance::AnimNotify_Shoot()
+{
+	Character->PlayerAttack();
 }

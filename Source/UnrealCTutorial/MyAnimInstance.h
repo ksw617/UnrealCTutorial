@@ -51,4 +51,8 @@ public:
 	
 public:
 	void PlayAttackMontage();
+public:
+	UFUNCTION()
+	void AnimNotify_Shoot();
+	
 };

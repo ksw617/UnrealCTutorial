@@ -29,7 +29,7 @@ AMyPlayer::AMyPlayer()
 	SpringArm->TargetArmLength = 400.f;
 	SpringArm->SetRelativeLocationAndRotation(FVector(0.0, 0.0, 100.0), FRotator(-25.0, 0.0, 0.0));
 	SpringArm->bUsePawnControlRotation = true;
-	SpringArm->SocketOffset = FVector(0.0, 120.0, 0.0);	//위치 이동
+	SpringArm->SocketOffset = FVector(0.0, 120.0, 0.0);
 
 	static ConstructorHelpers::FClassFinder<UAnimInstance> AI(TEXT("/Script/Engine.AnimBlueprint'/Game/Animation/ABP_Player.ABP_Player_C'"));
 
@@ -70,7 +70,8 @@ void AMyPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	{
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AMyPlayer::Move);
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AMyPlayer::Look);
-		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Triggered, this, &AMyPlayer::Fire);
+		//Started
+		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Started, this, &AMyPlayer::Fire);
 
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &AMyPlayer::Jump);
@@ -115,21 +116,18 @@ void AMyPlayer::Fire(const FInputActionValue& Value)
 	if (IsValid(AnimInstance))
 	{
 		AnimInstance->PlayAttackMontage();
-
-		FTransform SocketTransform = GetMesh()->GetSocketTransform(FName("ArrowSocket"));
-		FVector SocketLocation = SocketTransform.GetLocation();
-		FRotator SocketRotation = SocketTransform.GetRotation().Rotator();
-
-		FActorSpawnParameters Params;
-		Params.Owner = this;
-
-		auto MyArrow = GetWorld()->SpawnActor<AArrow>(SocketLocation, SocketRotation, Params);
-
 	}
 }
 
 
 void AMyPlayer::PlayerAttack()
 {
-	//UE_LOG(LogTemp, Log, TEXT("PlayerAttack"));
+	FTransform SocketTransform = GetMesh()->GetSocketTransform(FName("ArrowSocket"));
+	FVector SocketLocation = SocketTransform.GetLocation();
+	FRotator SocketRotation = SocketTransform.GetRotation().Rotator();
+
+	FActorSpawnParameters Params;
+	Params.Owner = this;
+
+	auto MyArrow = GetWorld()->SpawnActor<AArrow>(SocketLocation, SocketRotation, Params);
 }
